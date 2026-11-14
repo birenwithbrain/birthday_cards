@@ -114,7 +114,9 @@ function App() {
           {section === "evidence" && siteSettings.sections.memories && (
             <Evidence key="evidence" card={card} setCard={setCard} />
           )}
-          {section === "vogue" && siteSettings.sections.vogue && <Vogue key="vogue" />}
+          {section === "vogue" && siteSettings.sections.vogue && (
+            <Vogue key="vogue" />
+          )}
           {section === "cards" && siteSettings.sections.flashcards && (
             <Cards
               key="cards"
@@ -152,16 +154,18 @@ function App() {
           ["cards", "Cards", Sparkles, siteSettings.sections.flashcards],
           ["quiz", "Game", Cake, siteSettings.sections.quiz],
           ["wish", "Wish", Gift, siteSettings.sections.finalWish],
-        ].filter(([, , , enabled]: any) => enabled).map(([id, label, Icon]: any) => (
-          <button
-            key={id}
-            className={section === id ? "active" : ""}
-            onClick={() => go(id)}
-          >
-            <Icon size={18} />
-            <span>{label}</span>
-          </button>
-        ))}
+        ]
+          .filter(([, , , enabled]: any) => enabled)
+          .map(([id, label, Icon]: any) => (
+            <button
+              key={id}
+              className={section === id ? "active" : ""}
+              onClick={() => go(id)}
+            >
+              <Icon size={18} />
+              <span>{label}</span>
+            </button>
+          ))}
       </nav>
 
       <AnimatePresence>
@@ -257,39 +261,39 @@ function Home({
 
       <div className="quick-grid">
         {siteSettings.sections.memories && (
-        <button onClick={() => go("evidence")}>
-          <Camera />
-          <b>Open memories</b>
-          <span>tiny evidence archive</span>
-        </button>
+          <button onClick={() => go("evidence")}>
+            <Camera />
+            <b>Open memories</b>
+            <span>tiny evidence archive</span>
+          </button>
         )}
         {siteSettings.sections.vogue && (
-        <button onClick={() => go("vogue")}>
-          <Sparkles />
-          <b>Enter the Vogue edit</b>
-          <span>the birthday fashion issue</span>
-        </button>
+          <button onClick={() => go("vogue")}>
+            <Sparkles />
+            <b>Enter the Vogue edit</b>
+            <span>the birthday fashion issue</span>
+          </button>
         )}
         {siteSettings.sections.flashcards && (
-        <button onClick={() => go("cards")}>
-          <Sparkles />
-          <b>Flip the cards</b>
-          <span>answers may be rude</span>
-        </button>
+          <button onClick={() => go("cards")}>
+            <Sparkles />
+            <b>Flip the cards</b>
+            <span>answers may be rude</span>
+          </button>
         )}
         {siteSettings.sections.quiz && (
-        <button onClick={() => go("quiz")}>
-          <Cake />
-          <b>Take the test</b>
-          <span>scientifically dubious</span>
-        </button>
+          <button onClick={() => go("quiz")}>
+            <Cake />
+            <b>Take the test</b>
+            <span>scientifically dubious</span>
+          </button>
         )}
         {siteSettings.sections.finalWish && (
-        <button onClick={() => go("wish")}>
-          <Gift />
-          <b>Find the wish</b>
-          <span>{stars.length}/3 stars found</span>
-        </button>
+          <button onClick={() => go("wish")}>
+            <Gift />
+            <b>Find the wish</b>
+            <span>{stars.length}/3 stars found</span>
+          </button>
         )}
       </div>
 
@@ -796,6 +800,7 @@ function SectionHead({ kicker, title }: { kicker: string; title: string }) {
     </div>
   );
 }
+
 function MenuSheet({
   close,
   go,
@@ -803,6 +808,19 @@ function MenuSheet({
   close: () => void;
   go: (x: string) => void;
 }) {
+  const menuLinks: {
+    id: string;
+    label: string;
+    enabled: boolean;
+  }[] = [
+    { id: "home", label: "Home", enabled: true },
+    { id: "evidence", label: "Memories", enabled: siteSettings.sections.memories },
+    { id: "vogue", label: "Vogue Edition", enabled: siteSettings.sections.vogue },
+    { id: "cards", label: "Flashcards", enabled: siteSettings.sections.flashcards },
+    { id: "quiz", label: "Birthday test", enabled: siteSettings.sections.quiz },
+    { id: "wish", label: "Final wish", enabled: siteSettings.sections.finalWish },
+  ];
+
   return (
     <motion.div
       className="sheet-backdrop"
@@ -825,22 +843,23 @@ function MenuSheet({
             <X />
           </button>
         </div>
-        {[
-          ["home", "Home", true],
-          ["evidence", "Memories", siteSettings.sections.memories],
-          ["vogue", "Vogue Edition", siteSettings.sections.vogue],
-          ["cards", "Flashcards", siteSettings.sections.flashcards],
-          ["quiz", "Birthday test", siteSettings.sections.quiz],
-          ["wish", "Final wish", siteSettings.sections.finalWish],
-        ].filter(([, , enabled]: any) => enabled).map(([id, l]) => (
-          <button className="sheet-link" key={id} onClick={() => go(id)}>
-            {l}
-            <ArrowRight size={17} />
-          </button>
-        ))}
+
+        {menuLinks
+          .filter((item) => item.enabled)
+          .map((item) => (
+            <button
+              className="sheet-link"
+              key={item.id}
+              onClick={() => go(item.id)}
+            >
+              {item.label}
+              <ArrowRight size={17} />
+            </button>
+          ))}
       </motion.div>
     </motion.div>
   );
 }
+
 
 createRoot(document.getElementById("root")!).render(<App />);
