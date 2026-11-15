@@ -1593,10 +1593,17 @@ button:disabled {
 .wish-input-area {
   width: 100%;
   max-width: 520px;
-  margin: 28px auto 18px;
+  box-sizing: border-box;
+  margin: 28px auto 120px;
+  padding: 24px;
   display: flex;
   flex-direction: column;
   gap: 12px;
+  background: #fff;
+  border-radius: 22px;
+  box-shadow: var(--shadow);
+  position: relative;
+  z-index: 2;
 }
 .wish-input-area label {
   font-size: 0.95rem;
