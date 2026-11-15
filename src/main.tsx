@@ -846,6 +846,7 @@ function Wish({
 
           </div>
         </div>
+        <>
         <div className="wish-submission-card">
           <label htmlFor="birthday-wish">Write a little wish for yourself ♡</label>
           <textarea
@@ -870,6 +871,7 @@ function Wish({
           </button>
           {wishStatus && <p className="wish-status">{wishStatus}</p>}
         </div>
+        </>
       ) : (
 
         <div className="locked-copy">
