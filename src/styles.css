@@ -1657,7 +1657,7 @@ button:disabled {
   display: block;
   color: #79566a;
   font-size: 15px;
-  text-align: left;
+  text-align: center;
   line-height: 1.5;
 }
 .wish-page > .wish-submission-card textarea {
@@ -1674,7 +1674,7 @@ button:disabled {
   resize: vertical;
 }
 .wish-page > .wish-submission-card .big-cta {
-  align-self: flex-start;
+  align-self: center;
   margin-top: 4px;
 }
 .wish-page > .wish-submission-card .wish-status {
