@@ -814,6 +814,7 @@ function Wish({
       </div>
       
       {unlocked ? (
+        <>
         <div className="final-wish-hero">
           <img
             className="final-wish-photo"
@@ -846,7 +847,6 @@ function Wish({
 
           </div>
         </div>
-        <>
         <div className="wish-submission-card">
           <label htmlFor="birthday-wish">Write a little wish for yourself ♡</label>
           <textarea
