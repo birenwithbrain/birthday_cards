@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo, useState } from "react";
+// import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { AnimatePresence, motion } from "motion/react";
 import {
@@ -32,6 +33,22 @@ function App() {
   const [stars, setStars] = useState<number[]>([]);
   const [showMenu, setShowMenu] = useState(false);
   const [celebrate, setCelebrate] = useState(false);
+
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const startExperience = () => {
+    setIntro(false);
+
+    if (!audioRef.current) {
+      audioRef.current = new Audio("/music/birthday-song.mpeg");
+      audioRef.current.loop = true;
+      audioRef.current.volume = 1;
+    }
+
+    audioRef.current.play().catch((error) => {
+      console.error("Music playback could not start:", error);
+    });
+  };
 
   useEffect(() => {
     document.documentElement.style.setProperty(
@@ -85,7 +102,8 @@ function App() {
   const addStar = (n: number) =>
     setStars((s) => (s.includes(n) ? s : [...s, n]));
 
-  if (intro) return <Intro onStart={() => setIntro(false)} />;
+  // if (intro) return <Intro onStart={() => setIntro(false)} />;
+  if (intro) return <Intro onStart={startExperience} />;
 
   return (
     <div className="app">
@@ -211,7 +229,7 @@ function Intro({ onStart }: { onStart: () => void }) {
           <span>Open the surprise</span>
           <ArrowRight size={20} />
         </motion.button>
-        <small>best experienced with sound on · optional</small>
+        <p>Best experienced with sound on. 🔊</p>
       </div>
       <div className="floating-doodle">♡</div>
     </motion.section>
@@ -744,7 +762,7 @@ function Wish({
             <p className="wish-pretitle">Here's to</p>
             <h2>The Loveliest Year</h2>
 
-            <div className="wish-divider">♡</div>
+            {/* <div className="wish-divider">♡</div> */}
 
             <h3>Happy Birthday, {birthday.name}</h3>
 
