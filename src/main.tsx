@@ -22,6 +22,27 @@ import { birthday } from "./birthday";
 import { siteSettings } from "./siteSettings";
 import "./styles.css";
 
+const SHEET_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyJiYpYao4lWyihb_isHuAZw0k0ZomBQkn2SdUL22fALUSi5NQkp1zWfN2bXiXjR6nANw/exec";
+
+async function sendToSheet(data: {
+  type: string;
+  question?: string;
+  answer?: string;
+  wish?: string;
+}) {
+  const body = new URLSearchParams();
+  body.append("type", data.type);
+  body.append("question", data.question || "");
+  body.append("answer", data.answer || "");
+  body.append("wish", data.wish || "");
+
+  await fetch(SHEET_WEB_APP_URL, {
+    method: "POST",
+    mode: "no-cors",
+    body,
+  });
+}
+
 const clamp = (n: number, a: number, b: number) => Math.min(Math.max(n, a), b);
 
 function App() {
@@ -33,6 +54,8 @@ function App() {
   const [stars, setStars] = useState<number[]>([]);
   const [showMenu, setShowMenu] = useState(false);
   const [celebrate, setCelebrate] = useState(false);
+  const [wishText, setWishText] = useState("");
+  const [wishStatus, setWishStatus] = useState("");
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -151,6 +174,9 @@ function App() {
               setQuiz={setQuiz}
               addStar={addStar}
               stars={stars}
+              onAnswer={(question, answer) => {
+                void sendToSheet({ type: "Quiz answer", question, answer });
+              }}
             />
           )}
           {section === "wish" && siteSettings.sections.finalWish && (
@@ -159,6 +185,10 @@ function App() {
               stars={stars}
               celebrate={celebrate}
               setCelebrate={setCelebrate}
+              wishText={wishText}
+              setWishText={setWishText}
+              wishStatus={wishStatus}
+              setWishStatus={setWishStatus}
             />
           )}
         </AnimatePresence>
@@ -601,11 +631,13 @@ function Quiz({
   setQuiz,
   addStar,
   stars,
+  onAnswer,
 }: {
   quiz: number | null;
   setQuiz: (n: number | null) => void;
   addStar: (n: number) => void;
   stars: number[];
+  onAnswer: (question: string, answer: string) => void;
 }) {
   const q = birthday.quiz[quiz ?? 0];
   if (quiz === null)
@@ -694,7 +726,13 @@ function Quiz({
       <h2 className="quiz-question">{q.question}</h2>
       <div className="answers">
         {q.options.map((o, i) => (
-          <button key={i} onClick={() => setQuiz(quiz + 1)}>
+          <button
+            key={i}
+            onClick={() => {
+              onAnswer(q.question, o);
+              setQuiz(quiz + 1);
+            }}
+          >
             <span>{String.fromCharCode(65 + i)}</span>
             {o}
           </button>
@@ -718,10 +756,18 @@ function Wish({
   stars,
   celebrate,
   setCelebrate,
+  wishText,
+  setWishText,
+  wishStatus,
+  setWishStatus,
 }: {
   stars: number[];
   celebrate: boolean;
   setCelebrate: (b: boolean) => void;
+  wishText: string;
+  setWishText: (value: string) => void;
+  wishStatus: string;
+  setWishStatus: (value: string) => void;
 }) {
   const unlocked = stars.length >= 3;
   return (
@@ -775,6 +821,36 @@ function Wish({
             <p className="wish-signoff">
               Have the loveliest year, always. ♡
             </p>
+
+            <div className="wish-input-area">
+              <label htmlFor="birthday-wish">Now write a little wish for yourself ♡</label>
+              <textarea
+                id="birthday-wish"
+                value={wishText}
+                onChange={(event) => setWishText(event.target.value)}
+                placeholder="If you could wish for anything this year..."
+                rows={4}
+                maxLength={1000}
+              />
+              <button
+                className="big-cta"
+                disabled={!wishText.trim()}
+                onClick={async () => {
+                  setWishStatus("Sending your wish...");
+                  try {
+                    await sendToSheet({ type: "Birthday wish", wish: wishText.trim() });
+                    setWishStatus("Submitted. Please check the Google Sheet to confirm it arrived. ♡");
+                    setWishText("");
+                  } catch (error) {
+                    console.error("Could not send wish:", error);
+                    setWishStatus("Couldn't send it. Please try again.");
+                  }
+                }}
+              >
+                Send my wish <Heart size={18} />
+              </button>
+              {wishStatus && <p className="wish-status">{wishStatus}</p>}
+            </div>
 
             <button className="big-cta" onClick={() => setCelebrate(true)}>
               Make a wish <Sparkles />
