@@ -846,7 +846,7 @@ function Wish({
 
           </div>
         </div>
-        <div className="wish-input-area">
+        <div className="wish-submission-card">
           <label htmlFor="birthday-wish">Write a little wish for yourself ♡</label>
           <textarea
             id="birthday-wish"
