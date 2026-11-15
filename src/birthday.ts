@@ -2,10 +2,14 @@ import { siteSettings } from './siteSettings';
 
 import heroPhoto from './photos/hero-photo.jpeg';
 
+import finalWishPhoto from './photos/WishPhoto.jpg';
+
 export const birthday = {
   name: siteSettings.name,
   age: siteSettings.age,
   profilePhoto: heroPhoto,
+  finalWishPhoto: finalWishPhoto,
+
   theme: {
     background: '#fff8f1',
     foreground: '#241d2b',

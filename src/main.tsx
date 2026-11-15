@@ -727,16 +727,44 @@ function Wish({
         </div>
         <span>{unlocked ? "unlocked" : "three tiny stars unlock this"}</span>
       </div>
+      
       {unlocked ? (
-        <div className="final-letter">
-          <span className="eyebrow">a note for you</span>
-          <h2>{birthday.finalMessage.title}</h2>
-          <p>{birthday.finalMessage.body}</p>
-          <button className="big-cta" onClick={() => setCelebrate(true)}>
-            Make a wish <Sparkles />
-          </button>
+        <div className="final-wish-hero">
+          <img
+            className="final-wish-photo"
+            src={birthday.finalWishPhoto}
+            alt={`${birthday.name} birthday portrait`}
+          />
+
+          <div className="final-wish-gradient" />
+
+          <div className="final-letter">
+            <span className="eyebrow">a little wish, just for you</span>
+
+            <p className="wish-pretitle">Here's to</p>
+            <h2>The Loveliest Year</h2>
+
+            <div className="wish-divider">♡</div>
+
+            <h3>Happy Birthday, {birthday.name}</h3>
+
+            <p>
+              May this new year of your life be softer, happier and so much more you.
+              May it bring you the peace you deserve, the success you're working so
+              hard for, and a lot of unexpected, beautiful surprises along the way.
+            </p>
+
+            <p className="wish-signoff">
+              Have the loveliest year, always. ♡
+            </p>
+
+            <button className="big-cta" onClick={() => setCelebrate(true)}>
+              Make a wish <Sparkles />
+            </button>
+          </div>
         </div>
       ) : (
+
         <div className="locked-copy">
           <h2>Not yet, birthday detective.</h2>
           <p>
@@ -765,29 +793,34 @@ function Celebration({ close }: { close: () => void }) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
-      <div className="confetti">
-        {Array.from({ length: 34 }).map((_, i) => (
-          <i
+      
+    <div className="wish-granted-screen">
+      <button
+        className="wish-close-button"
+        onClick={close}
+        aria-label="Close celebration"
+      >
+        ×
+      </button>
+      <div className="shooting-stars">
+        {Array.from({ length: 7 }).map((_, i) => (
+          <span
             key={i}
-            style={{
-              left: `${(i * 37) % 100}%`,
-              animationDelay: `${(i % 9) * 0.08}s`,
-            }}
+            className={`shooting-star star-${i + 1}`}
           />
         ))}
       </div>
-      <button className="close" onClick={close}>
-        <X />
-      </button>
-      <div className="celebrate-inner">
-        <div className="cake-big">🎂</div>
-        <span>okay, this part is sincere.</span>
-        <h2>Have the loveliest year.</h2>
-        <p>
-          Eat the cake. Take the photos. Call the people who make you laugh.
-        </p>
-        <div className="hearts">♡ ♥ ♡ ♥ ♡</div>
-      </div>
+
+      <motion.h1
+        className="wish-granted-text"
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 2.8, ease: "easeOut", delay: 0.8 }}
+      >
+        Wish Granted !
+      </motion.h1>
+    </div>
+
     </motion.div>
   );
 }
