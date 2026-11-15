@@ -24,23 +24,44 @@ import "./styles.css";
 
 const SHEET_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyJiYpYao4lWyihb_isHuAZw0k0ZomBQkn2SdUL22fALUSi5NQkp1zWfN2bXiXjR6nANw/exec";
 
-async function sendToSheet(data: {
+function sendToSheet(data: {
   type: string;
   question?: string;
   answer?: string;
   wish?: string;
 }) {
-  const body = new URLSearchParams();
-  body.append("type", data.type);
-  body.append("question", data.question || "");
-  body.append("answer", data.answer || "");
-  body.append("wish", data.wish || "");
+  // Submit as a normal HTML form to avoid fetch/CORS blocking Apps Script.
+  const frameName = "birthday-sheet-submit-frame";
+  let frame = document.querySelector<HTMLIFrameElement>(`iframe[name="${frameName}"]`);
+  if (!frame) {
+    frame = document.createElement("iframe");
+    frame.name = frameName;
+    frame.style.display = "none";
+    document.body.appendChild(frame);
+  }
 
-  await fetch(SHEET_WEB_APP_URL, {
-    method: "POST",
-    mode: "no-cors",
-    body,
+  const form = document.createElement("form");
+  form.method = "POST";
+  form.action = SHEET_WEB_APP_URL;
+  form.target = frameName;
+  form.style.display = "none";
+
+  Object.entries({
+    type: data.type,
+    question: data.question || "",
+    answer: data.answer || "",
+    wish: data.wish || "",
+  }).forEach(([name, value]) => {
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.name = name;
+    input.value = value;
+    form.appendChild(input);
   });
+
+  document.body.appendChild(form);
+  form.submit();
+  form.remove();
 }
 
 const clamp = (n: number, a: number, b: number) => Math.min(Math.max(n, a), b);
@@ -822,40 +843,32 @@ function Wish({
               Have the loveliest year, always. ♡
             </p>
 
-            <div className="wish-input-area">
-              <label htmlFor="birthday-wish">Now write a little wish for yourself ♡</label>
-              <textarea
-                id="birthday-wish"
-                value={wishText}
-                onChange={(event) => setWishText(event.target.value)}
-                placeholder="If you could wish for anything this year..."
-                rows={4}
-                maxLength={1000}
-              />
-              <button
-                className="big-cta"
-                disabled={!wishText.trim()}
-                onClick={async () => {
-                  setWishStatus("Sending your wish...");
-                  try {
-                    await sendToSheet({ type: "Birthday wish", wish: wishText.trim() });
-                    setWishStatus("Submitted. Please check the Google Sheet to confirm it arrived. ♡");
-                    setWishText("");
-                  } catch (error) {
-                    console.error("Could not send wish:", error);
-                    setWishStatus("Couldn't send it. Please try again.");
-                  }
-                }}
-              >
-                Send my wish <Heart size={18} />
-              </button>
-              {wishStatus && <p className="wish-status">{wishStatus}</p>}
-            </div>
 
-            <button className="big-cta" onClick={() => setCelebrate(true)}>
-              Make a wish <Sparkles />
-            </button>
           </div>
+        </div>
+        <div className="wish-input-area">
+          <label htmlFor="birthday-wish">Write a little wish for yourself ♡</label>
+          <textarea
+            id="birthday-wish"
+            value={wishText}
+            onChange={(event) => setWishText(event.target.value)}
+            placeholder="If you could wish for anything this year..."
+            rows={4}
+            maxLength={1000}
+          />
+          <button
+            className="big-cta"
+            disabled={!wishText.trim()}
+            onClick={() => {
+              sendToSheet({ type: "Birthday wish", wish: wishText.trim() });
+              setWishStatus("Your wish has been submitted. Check the Sheet in a moment. ♡");
+              setWishText("");
+              setCelebrate(true);
+            }}
+          >
+            Make a wish <Sparkles />
+          </button>
+          {wishStatus && <p className="wish-status">{wishStatus}</p>}
         </div>
       ) : (
 
