@@ -76,7 +76,6 @@ function App() {
   const [showMenu, setShowMenu] = useState(false);
   const [celebrate, setCelebrate] = useState(false);
   const [wishText, setWishText] = useState("");
-  const [wishStatus, setWishStatus] = useState("");
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -208,8 +207,6 @@ function App() {
               setCelebrate={setCelebrate}
               wishText={wishText}
               setWishText={setWishText}
-              wishStatus={wishStatus}
-              setWishStatus={setWishStatus}
             />
           )}
         </AnimatePresence>
@@ -779,16 +776,12 @@ function Wish({
   setCelebrate,
   wishText,
   setWishText,
-  wishStatus,
-  setWishStatus,
 }: {
   stars: number[];
   celebrate: boolean;
   setCelebrate: (b: boolean) => void;
   wishText: string;
   setWishText: (value: string) => void;
-  wishStatus: string;
-  setWishStatus: (value: string) => void;
 }) {
   const unlocked = stars.length >= 3;
   return (
@@ -862,14 +855,12 @@ function Wish({
             disabled={!wishText.trim()}
             onClick={() => {
               sendToSheet({ type: "Birthday wish", wish: wishText.trim() });
-              setWishStatus("Your wish has been submitted. Check the Sheet in a moment. ♡");
               setWishText("");
               setCelebrate(true);
             }}
           >
             Make a wish <Sparkles />
           </button>
-          {wishStatus && <p className="wish-status">{wishStatus}</p>}
         </div>
         </>
       ) : (
